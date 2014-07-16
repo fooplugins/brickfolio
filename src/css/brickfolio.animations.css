@@ -162,6 +162,8 @@
 	transform: rotateY(-180deg);
 	-webkit-animation: helix .8s ease-in-out forwards;
 	animation: helix .8s ease-in-out forwards;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
 }
 @-webkit-keyframes helix {
 	0% { }

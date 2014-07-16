@@ -12,25 +12,42 @@
 
 	<script>
 		jQuery(function($){
-			var $animation = $('#animation').on('change', function(){
-				$('.brickfolio').brickfolio({animation: $(this).val()});
+			var $container = $('.brickfolio'),
+					$animation = $('#animation'),
+					$mixed_delay = $('#mixed_delay'),
+					$load_delay = $('#load_delay'),
+					getAnimation = function(){
+						return $animation.val() + ($mixed_delay.is(':checked') ? ' ' + $mixed_delay.val() : '');
+					},
+					getLoadTime = function(){
+						return $load_delay.is(':checked') ? $load_delay.val() : 0;
+					};
+
+			$animation.add($mixed_delay).add($load_delay).on('change', function(){
+				$container.brickfolio({animation: getAnimation(), loadTime: getLoadTime()});
 			});
-			$('.brickfolio').brickfolio({animation: $animation.val()});
+			$container.brickfolio({animation: getAnimation(), loadTime: getLoadTime()});
 		});
 	</script>
 </head>
 <body>
 <div class="demo-wrapper">
-	<select id="animation">
-		<option value="fade-in" selected="selected">Fade In</option>
-		<option value="fall">Fall</option>
-		<option value="fly">Fly</option>
-		<option value="helix">Helix</option>
-		<option value="pop-up">Pop Up</option>
-		<option value="move-up">Move Up</option>
-		<option value="scale-up">Scale Up</option>
-		<option value="swing-forward">Swing Forward</option>
-	</select>
+	<div class="demo-options">
+		<label>Animation
+			<select id="animation">
+				<option value="fade-in" selected="selected">Fade In</option>
+				<option value="fall">Fall</option>
+				<option value="fly">Fly</option>
+				<option value="helix">Helix</option>
+				<option value="pop-up">Pop Up</option>
+				<option value="move-up">Move Up</option>
+				<option value="scale-up">Scale Up</option>
+				<option value="swing-forward">Swing Forward</option>
+			</select>
+		</label>
+		<label>Mixed animation delays<input id="mixed_delay" type="checkbox" value="mixed-delay" checked></label>
+		<label>Simulate load delay<input id="load_delay" type="checkbox" value="2000"></label>
+	</div>
 	<div class="brickfolio">
 		<div class="bf-item">
 			<img data-src="holder.js/250x200/random">

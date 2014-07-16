@@ -36,18 +36,18 @@
 	100% { opacity: 1; }
 }
 
-/* move-up */
-.brickfolio.move-up .bf-item {
+/* slide-up */
+.brickfolio.slide-up .bf-item {
 	opacity: 0;
 }
-.brickfolio.move-up.bf-loaded .bf-item {
+.brickfolio.slide-up.bf-loaded .bf-item {
 	-webkit-transform: translateY(200px);
 	transform: translateY(200px);
-	-webkit-animation: move-up 0.65s ease forwards;
-	animation: move-up 0.65s ease forwards;
+	-webkit-animation: slide-up 0.65s ease forwards;
+	animation: slide-up 0.65s ease forwards;
 }
-@-webkit-keyframes move-up { 0% { } 100% { -webkit-transform: translateY(0); opacity: 1; } }
-@keyframes move-up { 0% { } 100% { -webkit-transform: translateY(0); transform: translateY(0); opacity: 1; } }
+@-webkit-keyframes slide-up { 0% { } 100% { -webkit-transform: translateY(0); opacity: 1; } }
+@keyframes slide-up { 0% { } 100% { -webkit-transform: translateY(0); transform: translateY(0); opacity: 1; } }
 
 /* scale-up */
 .brickfolio.scale-up .bf-item {
@@ -68,54 +68,54 @@
 	100% { -webkit-transform: scale(1); transform: scale(1); opacity: 1; }
 }
 
-/* swing-forward */
-.brickfolio.swing-forward {
+/* swing-down */
+.brickfolio.swing-down {
 	-webkit-perspective: 1300px;
 	perspective: 1300px;
 }
-.brickfolio.swing-forward .bf-item {
+.brickfolio.swing-down .bf-item {
 	opacity: 0;
 }
-.brickfolio.swing-forward.bf-loaded .bf-item {
+.brickfolio.swing-down.bf-loaded .bf-item {
 	-webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-transform-origin: 0% 0%;
 	transform-origin: 0% 0%;
 	-webkit-transform: rotateX(-80deg);
 	transform: rotateX(-80deg);
-	-webkit-animation: swing-forward .8s ease-in-out forwards;
-	animation: swing-forward .8s ease-in-out forwards;
+	-webkit-animation: swing-down .8s ease-in-out forwards;
+	animation: swing-down .8s ease-in-out forwards;
 }
-@-webkit-keyframes swing-forward {
+@-webkit-keyframes swing-down {
 	0% { }
 	100% { -webkit-transform: rotateX(0deg); opacity: 1; }
 }
-@keyframes swing-forward {
+@keyframes swing-down {
 	0% { }
 	100% { -webkit-transform: rotateX(0deg); transform: rotateX(0deg); opacity: 1; }
 }
 
-/* fall */
-.brickfolio.fall {
+/* drop */
+.brickfolio.drop {
 	-webkit-perspective: 1300px;
 	perspective: 1300px;
 }
-.brickfolio.fall .bf-item {
+.brickfolio.drop .bf-item {
 	opacity: 0;
 }
-.brickfolio.fall.bf-loaded .bf-item {
+.brickfolio.drop.bf-loaded .bf-item {
 	-webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-transform: translateZ(400px) translateY(300px) rotateX(-90deg);
 	transform: translateZ(400px) translateY(300px) rotateX(-90deg);
-	-webkit-animation: fall .8s ease-in-out forwards;
-	animation: fall .8s ease-in-out forwards;
+	-webkit-animation: drop .8s ease-in-out forwards;
+	animation: drop .8s ease-in-out forwards;
 }
-@-webkit-keyframes fall {
+@-webkit-keyframes drop {
 	0% { }
 	100% { -webkit-transform: translateZ(0px) translateY(0px) rotateX(0deg); opacity: 1; }
 }
-@keyframes fall {
+@keyframes drop {
 	0% { }
 	100% { -webkit-transform: translateZ(0px) translateY(0px) rotateX(0deg); transform: translateZ(0px) translateY(0px) rotateX(0deg); opacity: 1; }
 }
@@ -147,29 +147,29 @@
 	100% { -webkit-transform: rotateX(0deg); transform: rotateX(0deg); opacity: 1; }
 }
 
-/* helix */
-.brickfolio.helix {
+/* flip */
+.brickfolio.flip {
 	-webkit-perspective: 1300px;
 	perspective: 1300px;
 }
-.brickfolio.helix .bf-item {
+.brickfolio.flip .bf-item {
 	opacity: 0;
 }
-.brickfolio.helix.bf-loaded .bf-item {
+.brickfolio.flip.bf-loaded .bf-item {
 	-webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-transform: rotateY(-180deg);
 	transform: rotateY(-180deg);
-	-webkit-animation: helix .8s ease-in-out forwards;
-	animation: helix .8s ease-in-out forwards;
+	-webkit-animation: flip .8s ease-in-out forwards;
+	animation: flip .8s ease-in-out forwards;
 	-webkit-backface-visibility: hidden;
 	backface-visibility: hidden;
 }
-@-webkit-keyframes helix {
+@-webkit-keyframes flip {
 	0% { }
 	100% { -webkit-transform: rotateY(0deg); opacity: 1; }
 }
-@keyframes helix {
+@keyframes flip {
 	0% { }
 	100% { -webkit-transform: rotateY(0deg); transform: rotateY(0deg); opacity: 1; }
 }

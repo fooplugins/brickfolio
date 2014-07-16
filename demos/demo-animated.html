@@ -13,9 +13,9 @@
 	<script>
 		jQuery(function($){
 			var $container = $('.brickfolio'),
+					$load_delay = $('#load_delay'),
 					$animation = $('#animation'),
 					$mixed_delay = $('#mixed_delay'),
-					$load_delay = $('#load_delay'),
 					getAnimation = function(){
 						return $animation.val() + ($mixed_delay.is(':checked') ? ' ' + $mixed_delay.val() : '');
 					},
@@ -35,7 +35,8 @@
 	<div class="demo-options">
 		<label>Animation
 			<select id="animation">
-				<option value="drop" selected="selected">Drop</option>
+				<option value="" selected="selected">None</option>
+				<option value="drop">Drop</option>
 				<option value="fade-in">Fade In</option>
 				<option value="flip">Flip</option>
 				<option value="fly">Fly</option>
@@ -45,8 +46,8 @@
 				<option value="swing-down">Swing Down</option>
 			</select>
 		</label>
-		<label>Mixed animation delays<input id="mixed_delay" type="checkbox" value="mixed-delay" checked></label>
-		<label>Simulate load delay<input id="load_delay" type="checkbox" value="2000"></label>
+		<label><input id="mixed_delay" type="checkbox" value="mixed-delay" checked>Mixed delays</label>
+		<label><input id="load_delay" type="checkbox" value="1000">Simulate loading</label>
 	</div>
 	<div class="brickfolio">
 		<div class="bf-item">

@@ -10,7 +10,7 @@
 (function($){
 
 	/**
-	 *
+	 * Creates a new instance of the Brickfolio plugin.
 	 * @param element
 	 * @param options
 	 * @returns {Brickfolio}
@@ -23,6 +23,7 @@
 
 		_.defaults = {
 			animation: '', // adds the specified animation class to the container. Available = 'swing-forward'|'fly'|'fall'
+			filter: '', // a selector used to filter out items
 			itemSelector: '> .bf-item', // the jQuery selector to find items within the container. Assuming default values this would be ".brickfolio > .brickfolio-item"
 			imageSelector: '> img:first', // the jQuery selector to find the main image within an item. Assuming default values this would be ".brickfolio-item > img"
 			gutter: 40, // number in pixels of the gutter between items. This is used as a minimum value for vertical gutters and an absolute value for horizontal ones.
@@ -33,13 +34,15 @@
 				container: 'brickfolio', // class added to the container
 				loaded: 'bf-loaded', // class added to the container once items are loaded
 				item: 'bf-item', // class added to items within the container
-				error: 'bf-error' // class added to items that have broken images
+				error: 'bf-error', // class added to items that have broken images
+				filtered: 'bf-filtered' // class added to filtered items
 			}
 		};
 
 		_.$el = $(element);
 		_.options = $.extend(true, _.defaults, options);
 
+		__.loader = null;
 		__.layout = null;
 		__.timer = null;
 		__.isIE = null;
@@ -92,6 +95,7 @@
 
 			if ($items.length > 0){
 				_.wait($items).always(function(){
+					$items = _.filter($items);
 					$(window).on('resize.brickfolio', function(){
 						if (__.timer != null) clearTimeout(__.timer);
 						__.timer = setTimeout(function(){
@@ -100,7 +104,7 @@
 						}, _.options.responseTime);
 					});
 					_.layout($items);
-					$items.css('visibility', 'visible');
+					$items.css('visibility', '');
 					_.$el.addClass(_.options.classes.loaded);
 				});
 			}
@@ -113,11 +117,28 @@
 		 */
 		_.reinit = function(options){
 			$(window).off('resize.brickfolio');
-			_.$el.removeClass([_.options.animation, _.options.classes.loaded].join(' '))
-				.find(_.options.itemSelector)
-				.removeClass([_.options.classes.loaded, _.options.classes.error].join(' '));
+			_.$el.find(_.options.itemSelector)
+				.removeClass([_.options.classes.loaded, _.options.classes.error, _.options.classes.filtered].join(' '))
+				.css('visibility', 'hidden')
+				.end()
+				.removeClass([_.options.animation, _.options.classes.loaded].join(' '));
+
 			_.options = $.extend(true, _.options, options);
 			__.init();
+		};
+
+		/**
+		 * Filters the supplied items.
+		 * @param {*} $items - The jQuery object of items to filter.
+		 * @returns {*}
+		 */
+		_.filter = function($items){
+			$items.removeClass(_.options.classes.filtered);
+			if (_.options.hideErrors) $items.filter('.'+_.options.classes.error).addClass(_.options.classes.filtered).hide();
+			if (typeof _.options.filter === 'string' && _.options.filter.length > 0){
+				$items.not(_.options.filter).addClass(_.options.classes.filtered).hide();
+			}
+			return $items.not('.'+_.options.classes.filtered).show();
 		};
 
 		/**
@@ -128,39 +149,38 @@
 		_.wait = function($items){
 			var deferreds = [];
 			$items.each(function(){
-				var $item = $(this), $img = $item.find(_.options.imageSelector);
-				deferreds.push(new $.Deferred(function(deferred){
-					setTimeout(function(){
-						if ($img.length == 0){
-							deferred.resolve();
-						} else if ($img.get(0).complete == true){
-							var img = $img.get(0);
-							if ('naturalHeight' in img && 'naturalWidth' in img && img.naturalHeight == 0 && img.naturalWidth == 0){
-								if (_.options.hideErrors) $item.hide();
-								$item.addClass(_.options.classes.error);
-								deferred.reject();
-							} else {
-								$item.addClass(_.options.classes.loaded);
-								deferred.resolve();
-							}
-						} else {
-							$img.on({
-								'load.brickfolio': function(){
-									$img.off('.brickfolio');
-									$item.addClass(_.options.classes.loaded);
-									deferred.resolve();
-								},
-								'error.brickfolio': function(){
-									$img.off('.brickfolio');
-									if (_.options.hideErrors) $item.hide();
+				var $item = $(this),
+					$img = $item.find(_.options.imageSelector),
+					deferred = new $.Deferred(function(d){
+						setTimeout(function(){
+							if ($img.length == 0){
+								d.resolve();
+							} else if ($img.get(0).complete == true){
+								var img = $img.get(0);
+								if ('naturalHeight' in img && 'naturalWidth' in img && img.naturalHeight == 0 && img.naturalWidth == 0){
 									$item.addClass(_.options.classes.error);
-									deferred.reject();
+								} else {
+									$item.addClass(_.options.classes.loaded);
 								}
-							});
-							__.damnYouIE($img);
-						}
-					}, _.options.loadTime);
-				}));
+								d.resolve();
+							} else {
+								$img.on({
+									'load.brickfolio': function(){
+										$img.off('.brickfolio');
+										$item.addClass(_.options.classes.loaded);
+										d.resolve();
+									},
+									'error.brickfolio': function(){
+										$img.off('.brickfolio');
+										$item.addClass(_.options.classes.error);
+										d.resolve();
+									}
+								});
+								__.damnYouIE($img);
+							}
+						}, _.options.loadTime);
+					});
+				deferreds.push(deferred);
 			});
 			return $.when.apply($, deferreds);
 		};
@@ -183,6 +203,7 @@
 			cols = Math.floor((container_width - ((cols - 1) * _.options.gutter)) / item_width);
 
 			if (_.options.hideErrors) $items = $items.not('.'+_.options.classes.error);
+
 			$items.each(function(i){
 				var $item = $(this), heights = _.getHeights($item);
 				if (i % cols == 0){
@@ -202,13 +223,13 @@
 			top += tallest.outer - paddingTop;
 			_.$el.height(top);
 
-			// recheck size after a second to make sure scrollbars etc. didn't pop up due to the previous layout
+			// recheck size after a small delay to make sure scrollbars etc. didn't pop up due to the previous layout
 			if (__.layout) clearTimeout(__.layout);
 			__.layout = setTimeout(function(){
 				if (container_width != _.$el.width()){
 					_.layout($items);
 				}
-			}, 1000);
+			}, 600);
 		};
 
 		/**
@@ -266,7 +287,7 @@
 				: $item.data('brickfolio_height');
 		};
 
-		return __.init();
+		return __.init(false);
 	}
 
 	/**

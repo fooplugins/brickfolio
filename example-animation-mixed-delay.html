@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Brickfolio - Simple Example</title>
+	<link href="css/simple-example.css" rel="stylesheet">
+	<link href="css/simple-animation.css" rel="stylesheet">
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/jquery.brickfolio.js"></script>
+	<script>
+		jQuery(function($){
+			$('.brickfolio').brickfolio();
+		});
+	</script>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="brickfolio animate mixed-delay">
+			<div class="brickfolio-item">
+				<img src="content/non-existing.jpg">
+				<h4>Caption with a <a href="#">link</a></h4>
+				<p>This is a short description with broken image.</p>
+			</div>
+			<div class="brickfolio-item">
+				<img src="content/around-the-side-of-the-house-150x150.jpg">
+				<h4>Caption text here</h4>
+				<p>This is a long description that should push the overall height of the row down, if all items in the row are not the same height as this we have an issue.</p>
+			</div>
+			<div class="brickfolio-item">
+				<img src="content/basketball-lot-150x150.jpg">
+				<h4>Caption with a <a href="#">link</a></h4>
+				<p>This is a medium description, should end up being the same height as the longest.</p>
+			</div>
+			<div class="brickfolio-item">
+				<img src="content/factory-pipe-150x150.jpg">
+				<h4>Caption with a <a href="#">link</a></h4>
+				<p>This is a short description.</p>
+			</div>
+			<div class="brickfolio-item">
+				<img src="content/graffiti-150x150.jpg">
+				<h4>Caption text here</h4>
+				<p>This is a long description that should push the overall height of the row down, if all items in the row are not the same height as this we have an issue.</p>
+			</div>
+			<div class="brickfolio-item">
+				<img src="content/razor-wire-150x150.jpg">
+				<h4>Caption with a <a href="#">link</a></h4>
+				<p>This is a medium description, should end up being the same height as the longest.</p>
+			</div>
+			<div class="brickfolio-item">
+				<img src="content/shoot-some-hoops-150x150.jpg">
+				<h4>Caption with a <a href="#">link</a></h4>
+				<p>This is a short description.</p>
+			</div>
+			<div class="brickfolio-item">
+				<img src="content/abandoned-building-150x150.jpg">
+				<h4>Caption with a <a href="#">link</a></h4>
+				<p>This is a medium description, should end up being the same height as the longest.</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+.brickfolio.animate {
+	-webkit-perspective: 1300px;
+	perspective: 1300px;
+	height: 400px;
+	-webkit-transition: height 0.5s ease;
+	transition: height 0.5s ease;
+}
+.brickfolio.animate > .brickfolio-item {
+	opacity: 0;
+	-webkit-transition: top 0.5s ease, left 0.5s ease;
+	transition: top 0.5s ease, left 0.5s ease;
+}
+.brickfolio.animate.brickfolio-loaded > .brickfolio-item {
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	-webkit-transform-origin: 0% 0%;
+	transform-origin: 0% 0%;
+	-webkit-transform: rotateX(-80deg);
+	transform: rotateX(-80deg);
+	-webkit-animation: flip .8s ease-in-out forwards;
+	animation: flip .8s ease-in-out forwards;
+	-webkit-animation-delay: 0.5s;
+	animation-delay: 0.5s;
+}
+.brickfolio.animate.mixed-delay.brickfolio-loaded > .brickfolio-item:nth-child(2n) { -webkit-animation-delay: 0.6s; animation-delay: 0.6s; }
+.brickfolio.animate.mixed-delay.brickfolio-loaded > .brickfolio-item:nth-child(3n) { -webkit-animation-delay: 0.7s; animation-delay: 0.7s; }
+.brickfolio.animate.mixed-delay.brickfolio-loaded > .brickfolio-item:nth-child(5n) { -webkit-animation-delay: 0.8s; animation-delay: 0.8s; }
+
+@-webkit-keyframes flip {
+	0% { }
+	100% { -webkit-transform: rotateX(0deg); opacity: 1; }
+}
+
+@keyframes flip {
+	0% { }
+	100% { -webkit-transform: rotateX(0deg); transform: rotateX(0deg); opacity: 1; }
+}

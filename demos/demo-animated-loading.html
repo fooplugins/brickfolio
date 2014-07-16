@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<link href="demo.css" rel="stylesheet">
+	<script src="jquery-1.11.1.min.js"></script>
+
+	<link href="../src/css/brickfolio.animations.css" rel="stylesheet">
+	<script src="../src/js/jquery.brickfolio.js"></script>
+
+	<script>
+		jQuery(function($){
+			var $animation = $('#animation').on('change', function(){
+				$('.brickfolio').brickfolio({animation: $(this).val()});
+			});
+			$('.brickfolio').brickfolio({animation: $animation.val(), loadTime: 3000});
+		});
+	</script>
+</head>
+<body>
+<div class="demo-wrapper">
+	<select id="animation">
+		<option value="fade-in" selected="selected">Fade In</option>
+		<option value="fall">Fall</option>
+		<option value="fly">Fly</option>
+		<option value="helix">Helix</option>
+		<option value="pop-up">Pop Up</option>
+		<option value="move-up">Move Up</option>
+		<option value="scale-up">Scale Up</option>
+		<option value="swing-forward">Swing Forward</option>
+	</select>
+	<div class="brickfolio">
+		<div class="bf-item">
+			<img src="content/non-existing.jpg">
+			<h4>Mauris hendrerit est <a href="#">mauris</a></h4>
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+		</div>
+		<div class="bf-item">
+			<img src="content/around-the-side-of-the-house-150x150.jpg">
+			<h4>Aliquam porta vestibulum</h4>
+			<p>Nullam pharetra nunc sit amet erat tristique semper sed sed tortor. Aenean commodo, justo vitae faucibus dapibus, metus tellus sagittis eros, sit amet pulvinar sapien velit a turpis. Phasellus congue nulla eu nunc lacinia venenatis. Vivamus et lorem viverra, dignissim est vel, posuere neque.</p>
+		</div>
+		<div class="bf-item">
+			<img src="content/basketball-lot-150x150.jpg">
+			<h4>Mauris hendrerit est <a href="#">mauris</a></h4>
+			<p>Integer ipsum diam, dignissim eu turpis ut, hendrerit interdum tortor. Etiam porttitor blandit nunc, et consequat dui egestas sed. </p>
+		</div>
+		<div class="bf-item">
+			<img src="content/factory-pipe-150x150.jpg">
+			<h4>Mauris hendrerit est <a href="#">mauris</a></h4>
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+		</div>
+		<div class="bf-item">
+			<img src="content/graffiti-150x150.jpg">
+			<h4>Aliquam porta vestibulum</h4>
+			<p>Nullam pharetra nunc sit amet erat tristique semper sed sed tortor. Aenean commodo, justo vitae faucibus dapibus, metus tellus sagittis eros, sit amet pulvinar sapien velit a turpis. Phasellus congue nulla eu nunc lacinia venenatis. Vivamus et lorem viverra, dignissim est vel, posuere neque.</p>
+		</div>
+		<div class="bf-item">
+			<img src="content/razor-wire-150x150.jpg">
+			<h4>Mauris hendrerit est <a href="#">mauris</a></h4>
+			<p>Integer ipsum diam, dignissim eu turpis ut, hendrerit interdum tortor. Etiam porttitor blandit nunc, et consequat dui egestas sed. </p>
+		</div>
+		<div class="bf-item">
+			<img src="content/shoot-some-hoops-150x150.jpg">
+			<h4>Mauris hendrerit est <a href="#">mauris</a></h4>
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+		</div>
+		<div class="bf-item">
+			<img src="content/abandoned-building-150x150.jpg">
+			<h4>Aliquam porta vestibulum</h4>
+			<p>Integer ipsum diam, dignissim eu turpis ut, hendrerit interdum tortor. Etiam porttitor blandit nunc, et consequat dui egestas sed. </p>
+		</div>
+	</div>
+</div>
+</body>
+</html>

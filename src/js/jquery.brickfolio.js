@@ -13,22 +13,57 @@
 		var _ = this, __ = {};
 
 		_.defaults = {
-			itemSelector: '> .brickfolio-item', // the jQuery selector to find items within the container. Assuming default values this would be ".brickfolio > .brickfolio-item"
+			animation: '', // adds the specified animation class to the container. Available = 'swing-forward'|'fly'|'fall'
+			itemSelector: '> .bf-item', // the jQuery selector to find items within the container. Assuming default values this would be ".brickfolio > .brickfolio-item"
 			imageSelector: '> img:first', // the jQuery selector to find the main image within an item. Assuming default values this would be ".brickfolio-item > img"
 			gutter: 40, // number in pixels of the gutter between items. This is used as a minimum value for vertical gutters and an absolute value for horizontal ones.
 			responseTime: 100, // number in milliseconds before the layout is redrawn after the window resizes
 			hideErrors: false, // automatically hides any items where the image has failed to load
-			loadTime: 0, // only used to delay loading for testing purposes.
+			loadTime: 0, // only used to delay loading for testing and demo purposes.
 			classes: {
-				loaded: 'brickfolio-loaded', // class added to the container once items are loaded
-				error: 'brickfolio-item-error' // class added to items that have broken images
+				container: 'brickfolio', // class added to the container
+				loaded: 'bf-loaded', // class added to the container once items are loaded
+				item: 'bf-item', // class added to items within the container
+				error: 'bf-error' // class added to items that have broken images
 			}
 		};
 
 		_.$el = $(element);
 		_.options = $.extend(true, _.defaults, options);
 
+		__.layout = null;
 		__.timer = null;
+		__.isIE = null;
+
+		/**
+		 * This function is only here because of IE not supporting late binding to the image error event.
+		 * To work around this you have to reset the src after binding, initially this may look expensive but if the image is already loaded IE will simply fetch it from the cache.
+		 * @param {*} $img - The jQuery image object.
+		 */
+		__.damnYouIE = function($img){
+			if (__.isIE == null) __.isIE = window.navigator.userAgent.indexOf("MSIE ") > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./);
+			if (__.isIE == true){
+				$img.attr("src", $img.attr("src"));
+			}
+		};
+
+		/**
+		 * Checks whether the browser supports the CSS animation property.
+		 * @returns {boolean}
+		 */
+		__.supportsAnimation = function(){
+			var b = document.body || document.documentElement;
+			var s = b.style, p = 'animation', v;
+			if(typeof s[p] == 'string') { return true; }
+
+			// Tests for vendor specific prop
+			v = ['Moz', 'Webkit', 'Khtml', 'O', 'ms'];
+			p = p.charAt(0).toUpperCase() + p.substr(1);
+			for(var i=0; i<v.length; i++) {
+				if(typeof s[v[i] + p] == 'string') { return true; }
+			}
+			return false;
+		};
 
 		/**
 		 * Initializes the plugin applying required CSS, binding events and performing an initial layout.
@@ -36,15 +71,19 @@
 		 */
 		__.init = function(){
 			if (_.$el.css('position') == 'static') _.$el.css('position', 'relative');
-			_.$el.css('overflow', 'hidden');
-			var $items = _.$el.find(_.options.itemSelector).css({
+			_.$el.addClass(_.options.classes.container).css('overflow', 'hidden');
+			if (__.supportsAnimation()) _.$el.addClass(_.options.animation);
+
+			var $items = _.$el.find(_.options.itemSelector).addClass(_.options.classes.item).css({
 				position: 'absolute',
 				display: 'inline-block',
-				margin: 0
+				margin: 0,
+				visibility: 'hidden'
 			});
+
 			if ($items.length > 0){
 				_.wait($items).always(function(){
-					$(window).off('resize.brickfolio').on('resize.brickfolio', function(){
+					$(window).on('resize.brickfolio', function(){
 						if (__.timer != null) clearTimeout(__.timer);
 						__.timer = setTimeout(function(){
 							__.timer = null;
@@ -52,32 +91,24 @@
 						}, _.options.responseTime);
 					});
 					_.layout($items);
+					$items.css('visibility', 'visible');
 					_.$el.addClass(_.options.classes.loaded);
 				});
 			}
 			return _;
 		};
 
+		/**
+		 * Reinitializes the plugin with the specified options. Unlike init which uses the default options as the base for merging, reinit uses the current options instead.
+		 * @param {object} options - The plugin options to use.
+		 */
 		_.reinit = function(options){
+			$(window).off('resize.brickfolio');
+			_.$el.removeClass([_.options.animation, _.options.classes.loaded].join(' '))
+				.find(_.options.itemSelector)
+				.removeClass([_.options.classes.loaded, _.options.classes.error].join(' '));
 			_.options = $.extend(true, _.options, options);
-			var $items = _.$el.find(_.options.itemSelector).css({
-				position: 'absolute',
-				display: 'inline-block',
-				margin: 0
-			});
-			if ($items.length > 0){
-				_.wait($items).always(function(){
-					$(window).off('resize.brickfolio').on('resize.brickfolio', function(){
-						if (__.timer != null) clearTimeout(__.timer);
-						__.timer = setTimeout(function(){
-							__.timer = null;
-							_.layout($items);
-						}, _.options.responseTime);
-					});
-					_.layout($items);
-					_.$el.addClass(_.options.classes.loaded);
-				});
-			}
+			__.init();
 		};
 
 		/**
@@ -89,35 +120,38 @@
 			var deferreds = [];
 			$items.each(function(){
 				var $item = $(this), $img = $item.find(_.options.imageSelector);
-				if ($img.length > 0){
-					deferreds.push($.Deferred(function(defer){
-						setTimeout(function(){
+				deferreds.push(new $.Deferred(function(deferred){
+					setTimeout(function(){
+						if ($img.length == 0){
+							deferred.resolve();
+						} else if ($img.get(0).complete == true){
 							var img = $img.get(0);
-							if (img.complete == true){
-								if ('naturalHeight' in img && 'naturalWidth' in img && img.naturalHeight == 0 && img.naturalWidth == 0){
+							if ('naturalHeight' in img && 'naturalWidth' in img && img.naturalHeight == 0 && img.naturalWidth == 0){
+								if (_.options.hideErrors) $item.hide();
+								$item.addClass(_.options.classes.error);
+								deferred.reject();
+							} else {
+								$item.addClass(_.options.classes.loaded);
+								deferred.resolve();
+							}
+						} else {
+							$img.on({
+								'load.brickfolio': function(){
+									$img.off('.brickfolio');
+									$item.addClass(_.options.classes.loaded);
+									deferred.resolve();
+								},
+								'error.brickfolio': function(){
+									$img.off('.brickfolio');
 									if (_.options.hideErrors) $item.hide();
 									$item.addClass(_.options.classes.error);
-									defer.reject($img);
-								} else {
-									defer.resolve($img);
+									deferred.reject();
 								}
-							} else {
-								$img.on({
-									'load.brickfolio': function(){
-										$img.off('.brickfolio');
-										defer.resolve($img);
-									},
-									'error.brickfolio': function(){
-										$img.off('.brickfolio');
-										if (_.options.hideErrors) $item.hide();
-										$item.addClass(_.options.classes.error);
-										defer.reject($img);
-									}
-								});
-							}
-						}, _.options.loadTime);
-					}).promise());
-				}
+							});
+							__.damnYouIE($img);
+						}
+					}, _.options.loadTime);
+				}));
 			});
 			return $.when.apply($, deferreds);
 		};
@@ -129,11 +163,12 @@
 		_.layout = function($items){
 			var item_width = $items.first(':not(.'+_.options.classes.error+')').outerWidth(),
 				container_width = _.$el.width(),
-				padding = parseInt(_.$el.css('padding')),
+				paddingLeft = parseInt(_.$el.css('paddingLeft')),
+				paddingTop = parseInt(_.$el.css('paddingTop')),
 				tallest = { height: 0, outer: 0 },
 				row_items = [],
 				v_gutter = _.options.gutter,
-				top = padding,
+				top = paddingTop,
 				cols = Math.floor(container_width / item_width);
 
 			cols = Math.floor((container_width - ((cols - 1) * _.options.gutter)) / item_width);
@@ -143,7 +178,7 @@
 				var $item = $(this), heights = _.getHeights($item);
 				if (i % cols == 0){
 					if (row_items.length > 0){
-						v_gutter = _.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, padding);
+						v_gutter = _.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, paddingLeft);
 						top += tallest.outer + _.options.gutter;
 					}
 					row_items.length = 0;
@@ -154,9 +189,17 @@
 					row_items.push($item);
 				}
 			});
-			_.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, padding);
-			top += tallest.outer - _.options.gutter;
+			_.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, paddingLeft);
+			top += tallest.outer - paddingTop;
 			_.$el.height(top);
+
+			// recheck size after a second to make sure scrollbars etc. didn't pop up due to the previous layout
+			if (__.layout) clearTimeout(__.layout);
+			__.layout = setTimeout(function(){
+				if (container_width != _.$el.width()){
+					_.layout($items);
+				}
+			}, 1000);
 		};
 
 		/**

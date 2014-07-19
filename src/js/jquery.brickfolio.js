@@ -33,6 +33,7 @@
 			classes: {
 				container: 'brickfolio', // class added to the container
 				loaded: 'bf-loaded', // class added to the container once items are loaded
+				animated: 'bf-animated', // class added to the container to indicate animations are supported and being used
 				item: 'bf-item', // class added to items within the container
 				error: 'bf-error', // class added to items that have broken images
 				filtered: 'bf-filtered' // class added to filtered items
@@ -42,10 +43,72 @@
 		_.$el = $(element);
 		_.options = $.extend(true, _.defaults, options);
 
+		/**
+		 * Reinitializes the plugin with the specified options. Unlike init which uses the default options as the base for merging, reinit uses the current options instead.
+		 * @param {object} options - The plugin options to use.
+		 */
+		_.reinit = function(options){
+			$(window).off('resize.brickfolio');
+			_.$el.find(_.options.itemSelector)
+				.removeClass([_.options.classes.loaded, _.options.classes.error, _.options.classes.filtered].join(' '))
+				.css('visibility', 'hidden')
+				.end()
+				.removeClass([_.options.animation, _.options.classes.animated, _.options.classes.loaded].join(' '));
+
+			_.options = $.extend(true, _.options, options);
+			__.init();
+		};
+
+		_.filter = function(selector){
+			_.options.filter = selector;
+			var $items = _.$el.find(_.options.itemSelector);
+			$items = __.filter($items);
+			__.layout($items.css('visibility', ''));
+		};
+
+		/* The below are all private methods and properties not intended for public use. */
+
 		__.loader = null;
-		__.layout = null;
-		__.timer = null;
+		__.layout_timer = null;
+		__.resize_timer = null;
 		__.isIE = null;
+
+		/**
+		 * Initializes the plugin applying required CSS, binding events and performing an initial layout.
+		 * @returns {Brickfolio}
+		 */
+		__.init = function(){
+			if (_.$el.css('position') == 'static') _.$el.css('position', 'relative');
+			_.$el.addClass(_.options.classes.container).css('overflow', 'hidden');
+
+			if (__.supportsAnimation() && typeof _.options.animation === 'string' && _.options.animation.length > 0){
+				_.$el.addClass(_.options.classes.animated).addClass(_.options.animation);
+			}
+
+			var $items = _.$el.find(_.options.itemSelector).addClass(_.options.classes.item).css({
+				position: 'absolute',
+				display: 'inline-block',
+				margin: 0,
+				visibility: 'hidden'
+			});
+
+			if ($items.length > 0){
+				__.wait($items).always(function(){
+					$items = __.filter($items);
+					$(window).on('resize.brickfolio', function(){
+						if (__.resize_timer != null) clearTimeout(__.resize_timer);
+						__.resize_timer = setTimeout(function(){
+							__.resize_timer = null;
+							__.layout($items);
+						}, _.options.responseTime);
+					});
+					__.layout($items);
+					$items.css('visibility', '');
+					_.$el.addClass(_.options.classes.loaded);
+				});
+			}
+			return _;
+		};
 
 		/**
 		 * This function is only here because of IE not supporting late binding to the image error event.
@@ -78,67 +141,17 @@
 		};
 
 		/**
-		 * Initializes the plugin applying required CSS, binding events and performing an initial layout.
-		 * @returns {Brickfolio}
-		 */
-		__.init = function(){
-			if (_.$el.css('position') == 'static') _.$el.css('position', 'relative');
-			_.$el.addClass(_.options.classes.container).css('overflow', 'hidden');
-			if (__.supportsAnimation()) _.$el.addClass(_.options.animation);
-
-			var $items = _.$el.find(_.options.itemSelector).addClass(_.options.classes.item).css({
-				position: 'absolute',
-				display: 'inline-block',
-				margin: 0,
-				visibility: 'hidden'
-			});
-
-			if ($items.length > 0){
-				_.wait($items).always(function(){
-					$items = _.filter($items);
-					$(window).on('resize.brickfolio', function(){
-						if (__.timer != null) clearTimeout(__.timer);
-						__.timer = setTimeout(function(){
-							__.timer = null;
-							_.layout($items);
-						}, _.options.responseTime);
-					});
-					_.layout($items);
-					$items.css('visibility', '');
-					_.$el.addClass(_.options.classes.loaded);
-				});
-			}
-			return _;
-		};
-
-		/**
-		 * Reinitializes the plugin with the specified options. Unlike init which uses the default options as the base for merging, reinit uses the current options instead.
-		 * @param {object} options - The plugin options to use.
-		 */
-		_.reinit = function(options){
-			$(window).off('resize.brickfolio');
-			_.$el.find(_.options.itemSelector)
-				.removeClass([_.options.classes.loaded, _.options.classes.error, _.options.classes.filtered].join(' '))
-				.css('visibility', 'hidden')
-				.end()
-				.removeClass([_.options.animation, _.options.classes.loaded].join(' '));
-
-			_.options = $.extend(true, _.options, options);
-			__.init();
-		};
-
-		/**
 		 * Filters the supplied items.
 		 * @param {*} $items - The jQuery object of items to filter.
 		 * @returns {*}
 		 */
-		_.filter = function($items){
-			$items.removeClass(_.options.classes.filtered);
-			if (_.options.hideErrors) $items.filter('.'+_.options.classes.error).addClass(_.options.classes.filtered).hide();
+		__.filter = function($items){
+			$items.removeClass(_.options.classes.filtered).css({opacity: '', animation: '', '-webkit-animation': ''});
+			if (_.options.hideErrors) $items.filter('.'+_.options.classes.error).addClass(_.options.classes.filtered).css({top: 0, left: 0, opacity: 0, animation: 'none', '-webkit-animation': 'none'});
 			if (typeof _.options.filter === 'string' && _.options.filter.length > 0){
-				$items.not(_.options.filter).addClass(_.options.classes.filtered).hide();
+				$items.not(_.options.filter).addClass(_.options.classes.filtered).css({top: 0, left: 0, opacity: 0, animation: 'none', '-webkit-animation': 'none'});
 			}
-			return $items.not('.'+_.options.classes.filtered).show();
+			return $items.not('.'+_.options.classes.filtered);
 		};
 
 		/**
@@ -146,7 +159,7 @@
 		 * @param {*} $items - The jQuery object of items to wait on.
 		 * @returns {jQuery.Deferred}
 		 */
-		_.wait = function($items){
+		__.wait = function($items){
 			var deferreds = [];
 			$items.each(function(){
 				var $item = $(this),
@@ -189,7 +202,7 @@
 		 * Performs the actual layout on the supplied items.
 		 * @param {*} $items - The jQuery object of items to layout.
 		 */
-		_.layout = function($items){
+		__.layout = function($items){
 			var item_width = $items.first(':not(.'+_.options.classes.error+')').outerWidth(),
 				container_width = _.$el.width(),
 				paddingLeft = parseInt(_.$el.css('paddingLeft')),
@@ -205,10 +218,10 @@
 			if (_.options.hideErrors) $items = $items.not('.'+_.options.classes.error);
 
 			$items.each(function(i){
-				var $item = $(this), heights = _.getHeights($item);
+				var $item = $(this), heights = __.getHeights($item);
 				if (i % cols == 0){
 					if (row_items.length > 0){
-						v_gutter = _.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, paddingLeft);
+						v_gutter = __.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, paddingLeft);
 						top += tallest.outer + _.options.gutter;
 					}
 					row_items.length = 0;
@@ -219,15 +232,16 @@
 					row_items.push($item);
 				}
 			});
-			_.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, paddingLeft);
+			__.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, paddingLeft);
 			top += tallest.outer - paddingTop;
 			_.$el.height(top);
 
 			// recheck size after a small delay to make sure scrollbars etc. didn't pop up due to the previous layout
-			if (__.layout) clearTimeout(__.layout);
-			__.layout = setTimeout(function(){
+			if (__.layout_timer) clearTimeout(__.layout_timer);
+			__.layout_timer = setTimeout(function(){
+				__.layout_timer = null;
 				if (container_width != _.$el.width()){
-					_.layout($items);
+					__.layout($items);
 				}
 			}, 600);
 		};
@@ -244,20 +258,20 @@
 		 * @param {number} left - The current row items starting left position.
 		 * @returns {number} - This rows current vertical gutter.
 		 */
-		_.update = function(row_items, tallest, item_width, container_width, expected_count, v_gutter, top, left){
+		__.update = function(row_items, tallest, item_width, container_width, expected_count, v_gutter, top, left){
 			if (row_items.length == 0) return v_gutter;
 			var short = row_items.length < expected_count || row_items.length <= 2,
 				remainder = container_width - (row_items.length * item_width);
 
 			if (row_items.length == 1){ // 1 column
-				_.setHeights(row_items[0], tallest);
+				__.setHeights(row_items[0], tallest);
 				left += remainder / 2;
 				row_items[0].css({ top: top, left: left });
 			} else {
 				v_gutter = short ? v_gutter : Math.floor(remainder / (row_items.length - 1));
 				left += short ? Math.floor((remainder - ((row_items.length - 1) * v_gutter)) / 2) : 0;
 				for (var i = 0; i < row_items.length; i++){
-					_.setHeights(row_items[i], tallest);
+					__.setHeights(row_items[i], tallest);
 					row_items[i].css({ top: top, left: left + (item_width * i) + (v_gutter * i)});
 				}
 			}
@@ -269,7 +283,7 @@
 		 * @param {*} $item - The jQuery item object.
 		 * @param {number} height - The height to set the item to.
 		 */
-		_.setHeights = function($item, height){
+		__.setHeights = function($item, height){
 			if ($item.data('brickfolio_height') == undefined)
 				$item.data('brickfolio_height', { height: $item.height(), outer: $item.outerHeight() });
 
@@ -281,28 +295,42 @@
 		 * @param {*} $item - The jQuery item object.
 		 * @returns {{height: *, outer: *}}
 		 */
-		_.getHeights = function($item){
+		__.getHeights = function($item){
 			return $item.data('brickfolio_height') == undefined
 				? { height: $item.height(), outer: $item.outerHeight() }
 				: $item.data('brickfolio_height');
 		};
 
-		return __.init(false);
+		return __.init();
 	}
 
 	/**
 	 * Performs a simple layout routine on the selected containers items.
-	 * @param {object} [options] - The plugin options.
+	 * @param {(object|string)} [optionsOrMethod] - The plugin options or the method to execute.
+	 * @param {*} [arg1] - If the first parameter is a method call this is the first argument passed to the method.
+	 * @param {*} [argN] - Any additional arguments to pass to the method.
 	 * @returns {*}
 	 */
-	$.fn.brickfolio = function(options){
-		return this.each(function(){
-			if (this.__brickfolio__){
-				this.__brickfolio__.reinit(options);
-			} else {
-				this.__brickfolio__ = new Brickfolio(this, options);
-			}
-		});
+	$.fn.brickfolio = function(optionsOrMethod, arg1, argN){
+		if (typeof optionsOrMethod === 'string'){ // perform a method call
+			var args = Array.prototype.slice.call(arguments),
+				methodName = args.shift(),
+				method = function(brickfolio){ return $.isFunction(brickfolio[methodName]) ? brickfolio[methodName] : $.noop; };
+
+			return this.each(function(){
+				if (this.__brickfolio__ instanceof Brickfolio){
+					method(this.__brickfolio__).apply(this.__brickfolio__, args);
+				}
+			});
+		} else {
+			return this.each(function(){
+				if (this.__brickfolio__ instanceof Brickfolio){
+					this.__brickfolio__.reinit(optionsOrMethod);
+				} else {
+					this.__brickfolio__ = new Brickfolio(this, optionsOrMethod);
+				}
+			});
+		}
 	};
 
 })(jQuery);

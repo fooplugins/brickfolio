@@ -27,7 +27,10 @@
 						return $filter.filter(':checked').val();
 					};
 
-			$load_delay.add($animation).add($mixed_delay).add($filter).on('change', function(){
+			$filter.on('change', function(){
+				$container.brickfolio('filter', getFilter());
+			});
+			$load_delay.add($animation).add($mixed_delay).on('change', function(){
 				$container.brickfolio({animation: getAnimation(), filter: getFilter(), loadTime: getLoadTime()});
 			});
 			$container.brickfolio({animation: getAnimation(), filter: getFilter(), loadTime: getLoadTime()});

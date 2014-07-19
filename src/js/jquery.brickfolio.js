@@ -24,8 +24,8 @@
 		_.defaults = {
 			animation: '', // adds the specified animation class to the container. Available = 'swing-forward'|'fly'|'fall'
 			filter: '', // a selector used to filter out items
-			itemSelector: '> .bf-item', // the jQuery selector to find items within the container. Assuming default values this would be ".brickfolio > .brickfolio-item"
-			imageSelector: '> img:first', // the jQuery selector to find the main image within an item. Assuming default values this would be ".brickfolio-item > img"
+			itemSelector: '.bf-item', // the jQuery selector to find items within the container. Assuming default values this would be ".brickfolio .bf-item"
+			imageSelector: 'img:first', // the jQuery selector to find the main image within an item. Assuming default values this would be ".bf-item img:first"
 			gutter: 40, // number in pixels of the gutter between items. This is used as a minimum value for vertical gutters and an absolute value for horizontal ones.
 			responseTime: 100, // number in milliseconds before the layout is redrawn after the window resizes
 			hideErrors: false, // automatically hides any items where the image has failed to load

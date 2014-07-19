@@ -92,7 +92,8 @@
 			if (_.$el.css('position') == 'static') _.$el.css('position', 'relative');
 			_.$el.addClass(_.options.classes.container).css('overflow', 'hidden');
 
-			if (__.supportsAnimation() && typeof _.options.animation === 'string' && _.options.animation.length > 0){
+			var test = _.options.animation.replace(/\s*mixed-delay\s*/g, ' ').replace(/^\s+|\s+$/g, "");
+			if (__.supportsAnimation() && typeof test === 'string' && test.length > 0){
 				_.$el.addClass(_.options.classes.animated).addClass(_.options.animation);
 			}
 

@@ -48,7 +48,7 @@
 		 * @param {object} options - The plugin options to use.
 		 */
 		_.reinit = function(options){
-			$(window).off('resize.brickfolio');
+			$(window).off('resize.brickfolio', __.onWindowResize);
 			_.$el.find(_.options.itemSelector)
 				.removeClass([_.options.classes.loaded, _.options.classes.error, _.options.classes.filtered].join(' '))
 				.css('visibility', 'hidden')
@@ -59,8 +59,19 @@
 			__.init();
 		};
 
+		/**
+		 * Filters the current items using the specified selector.
+		 * @param {string} selector - A jQuery selector that specifies the items to show.
+		 */
 		_.filter = function(selector){
 			_.options.filter = selector;
+			_.layout();
+		};
+
+		/**
+		 * Simply tells brickfolio to perform a layout of it's current items.
+		 */
+		_.layout = function(){
 			var $items = _.$el.find(_.options.itemSelector);
 			$items = __.filter($items);
 			__.layout($items.css('visibility', ''));
@@ -95,19 +106,21 @@
 			if ($items.length > 0){
 				__.wait($items).always(function(){
 					$items = __.filter($items);
-					$(window).on('resize.brickfolio', function(){
-						if (__.resize_timer != null) clearTimeout(__.resize_timer);
-						__.resize_timer = setTimeout(function(){
-							__.resize_timer = null;
-							__.layout($items);
-						}, _.options.responseTime);
-					});
+					$(window).on('resize.brickfolio', __.onWindowResize);
 					__.layout($items);
 					$items.css('visibility', '');
 					_.$el.addClass(_.options.classes.loaded);
 				});
 			}
 			return _;
+		};
+
+		__.onWindowResize = function(){
+			if (__.resize_timer != null) clearTimeout(__.resize_timer);
+			__.resize_timer = setTimeout(function(){
+				__.resize_timer = null;
+				_.layout();
+			}, _.options.responseTime);
 		};
 
 		/**

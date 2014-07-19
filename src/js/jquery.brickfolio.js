@@ -74,7 +74,8 @@
 		_.layout = function(){
 			var $items = _.$el.find(_.options.itemSelector);
 			$items = __.filter($items);
-			__.layout($items.css('visibility', ''));
+			__.layout($items);
+			$items.css('visibility', '');
 		};
 
 		/* The below are all private methods and properties not intended for public use. */
@@ -107,15 +108,18 @@
 			if ($items.length > 0){
 				__.wait($items).always(function(){
 					$items = __.filter($items);
-					$(window).on('resize.brickfolio', __.onWindowResize);
 					__.layout($items);
 					$items.css('visibility', '');
+					$(window).on('resize.brickfolio', __.onWindowResize);
 					_.$el.addClass(_.options.classes.loaded);
 				});
 			}
 			return _;
 		};
 
+		/**
+		 * Handles the window resize event throttling it as specified by the responseTime option.
+		 */
 		__.onWindowResize = function(){
 			if (__.resize_timer != null) clearTimeout(__.resize_timer);
 			__.resize_timer = setTimeout(function(){
@@ -160,10 +164,10 @@
 		 * @returns {*}
 		 */
 		__.filter = function($items){
-			$items.removeClass(_.options.classes.filtered).css({opacity: '', animation: '', '-webkit-animation': ''});
-			if (_.options.hideErrors) $items.filter('.'+_.options.classes.error).addClass(_.options.classes.filtered).css({top: 0, left: 0, opacity: 0, animation: 'none', '-webkit-animation': 'none'});
+			$items.removeClass(_.options.classes.filtered).css({visibility: '', opacity: '', animation: '', '-webkit-animation': ''});
+			if (_.options.hideErrors) $items.filter('.'+_.options.classes.error).addClass(_.options.classes.filtered).css({visibility: 'hidden', opacity: 0, animation: 'none', '-webkit-animation': 'none'});
 			if (typeof _.options.filter === 'string' && _.options.filter.length > 0){
-				$items.not(_.options.filter).addClass(_.options.classes.filtered).css({top: 0, left: 0, opacity: 0, animation: 'none', '-webkit-animation': 'none'});
+				$items.not(_.options.filter).addClass(_.options.classes.filtered).css({visibility: 'hidden', opacity: 0, animation: 'none', '-webkit-animation': 'none'});
 			}
 			return $items.not('.'+_.options.classes.filtered);
 		};

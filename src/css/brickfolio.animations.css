@@ -11,8 +11,8 @@
 	transition: height 0.5s ease;
 }
 .brickfolio.bf-animated .bf-item {
-	-webkit-transition: top 0.5s ease, left 0.5s ease, opacity 0.5s ease, visibility 0.5s ease, height 0.5s ease;
-	transition: top 0.5s ease, left 0.5s ease, opacity 0.5s ease, visibility 0.5s ease, height 0.5s ease;
+	-webkit-transition: top 0.5s ease, left 0.5s ease, opacity 0.5s ease, height 0.5s ease;
+	transition: top 0.5s ease, left 0.5s ease, opacity 0.5s ease, height 0.5s ease;
 }
 .brickfolio.bf-animated.bf-loaded .bf-item { opacity: 1; -webkit-animation-delay: 0.5s; animation-delay: 0.5s; }
 .brickfolio.bf-animated.mixed-delay.bf-loaded .bf-item:nth-child(2n) { -webkit-animation-delay: 0.1s; animation-delay: 0.1s; }

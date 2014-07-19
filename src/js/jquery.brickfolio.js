@@ -49,11 +49,9 @@
 		 */
 		_.reinit = function(options){
 			$(window).off('resize.brickfolio', __.onWindowResize);
-			_.$el.find(_.options.itemSelector)
+			_.$el.removeClass([_.options.animation, _.options.classes.animated, _.options.classes.loaded].join(' ')).find(_.options.itemSelector)
 				.removeClass([_.options.classes.loaded, _.options.classes.error, _.options.classes.filtered].join(' '))
-				.css('visibility', 'hidden')
-				.end()
-				.removeClass([_.options.animation, _.options.classes.animated, _.options.classes.loaded].join(' '));
+				.css('visibility', 'hidden');
 
 			_.options = $.extend(true, _.options, options);
 			__.init();

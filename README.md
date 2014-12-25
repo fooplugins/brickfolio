@@ -34,7 +34,21 @@ In your Javascript:
 
 ```
 jQuery(function($){
-  $('.brickfolio').brickfolio();
+  $('.brickfolio').brickfolio({
+		animation: 'fly', // drop|fade-in|flip|fly|pop-up|scale-up|slide-up|swing-down
+		filter: '.ignore-item', // a selector used to filter out items
+		gutter: 40, // number in pixels of the gutter between items
+		responseTime: 200, // number in milliseconds before the layout is redrawn after the window resizes
+		hideErrors: false, // automatically hides items where the image fails to load
+		classes: {
+			container: 'brickfolio', // class added to the container
+			loaded: 'bf-loaded', // class added to the container once items are loaded
+			animated: 'bf-animated', // class added to the container to indicate animations are supported and being used
+			item: 'bf-item', // class added to items within the container
+			error: 'bf-error', // class added to items that have broken images
+			filtered: 'bf-filtered' // class added to filtered items
+		}
+	});
 });
 ```
 

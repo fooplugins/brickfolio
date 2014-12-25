@@ -2,10 +2,7 @@
   "name": "brickfolio",
   "version": "0.0.2",
   "description": "Better Grid Layouts - Especially for Portfolio Pages",
-  "main": [
-		"dist/js/jquery.brickfolio.min.js",
-		"dist/css/brickfolio.min.css"
-	],
+  "main": "src/js/jquery.brickfolio.js",
   "dependencies": {
     "jquery": ">=1.8 <2"
   },

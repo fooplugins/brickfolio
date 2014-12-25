@@ -15,7 +15,8 @@ Or copy the following files into your project:
 
 In your HTML:
 
-`<div class="brickfolio">
+```
+<div class="brickfolio">
 	<div class="bf-item">
 		<img data-src="image1.png">
 		<h4>Lorem ipsum dolor sit</h4>
@@ -26,20 +27,25 @@ In your HTML:
 		<h4>Quare attende, quaeso</h4>
 		<p>Quare attende, quaeso. Sed plane dicit quod intellegit. Non semper, inquam;</p>
 	</div>
-</div>`
+</div>
+```
 
 In your Javascript:
 
-`jQuery(function($){
+```
+jQuery(function($){
   $('.brickfolio').brickfolio();
-});`
+});
+```
 
 In your CSS:
 
-`.bf-item {
+```
+.bf-item {
 	/* The brickfolio item must have a width set. */
 	width: 250px;
-}`
+}
+```
 
 * * *
 

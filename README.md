@@ -15,7 +15,7 @@ Or copy the following files into your project:
 
 In your HTML:
 
-```
+```html
 <div class="brickfolio">
 	<div class="bf-item">
 		<img data-src="image1.png">
@@ -32,7 +32,7 @@ In your HTML:
 
 In your Javascript:
 
-```
+```javascript
 jQuery(function($){
   $('.brickfolio').brickfolio({
 		animation: 'fly', // drop|fade-in|flip|fly|pop-up|scale-up|slide-up|swing-down
@@ -54,7 +54,7 @@ jQuery(function($){
 
 In your CSS:
 
-```
+```css
 .bf-item {
 	/* The brickfolio item must have a width set. */
 	width: 250px;

@@ -1,7 +1,7 @@
 /*jslint devel: true, browser: true, unparam: true, debug: false, es5: true, white: false, maxerr: 1000 */
 /**!
  * Brickfolio - A jQuery plugin for equally spaced grid layouts
- * @version 0.0.3
+ * @version 0.0.4
  * @link https://github.com/fooplugins/brickfolio
  * @copyright Steven Usher & Brad Vincent 2014
  * @license Released under the GPL license.

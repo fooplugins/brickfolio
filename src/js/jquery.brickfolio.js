@@ -230,6 +230,7 @@
 				cols = Math.floor(container_width / item_width);
 
 			cols = Math.floor((container_width - ((cols - 1) * _.options.gutter)) / item_width);
+			cols = cols <= 0 ? 1 : cols;
 
 			if (_.options.hideErrors) $items = $items.not('.'+_.options.classes.error);
 

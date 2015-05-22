@@ -16,14 +16,14 @@ module.exports = function (grunt) {
 					}
 				},
 				files: {
-					'dist/js/jquery.brickfolio.min.js': [ 'src/js/jquery.brickfolio.js' ]
+					'dist/jquery.brickfolio.min.js': [ 'src/js/jquery.brickfolio.js' ]
 				}
 			}
-		},	
+		},
 		cssmin: {
 			minify: {
-				src: [ 'src/css/brickfolio.animations.css' ],
-				dest: 'dist/css/brickfolio.min.css'
+				src: [ 'src/css/brickfolio.css','src/css/brickfolio.animations.css' ],
+				dest: 'dist/jquery.brickfolio.min.css'
 			}
 		}
 	});

@@ -8,8 +8,8 @@ Install using [Bower](http://bower.io): `bower install brickfolio`
 
 Or copy the following files into your project:
 
-+ [jquery.brickfolio.min.js](dist/js/jquery.brickfolio.min.js)
-+ [brickfolio.min.css](dist/css/brickfolio.min.css)
++ [jquery.brickfolio.min.js](dist/jquery.brickfolio.min.js)
++ [jquery.brickfolio.min.css](dist/jquery.brickfolio.min.css)
 
 ## Usage
 

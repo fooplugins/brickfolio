@@ -1,7 +1,7 @@
 /*jslint devel: true, browser: true, unparam: true, debug: false, es5: true, white: false, maxerr: 1000 */
 /**!
  * Brickfolio - A jQuery plugin for equally spaced grid layouts
- * @version 0.0.4
+ * @version 0.0.5
  * @link https://github.com/fooplugins/brickfolio
  * @copyright Steven Usher & Brad Vincent 2014
  * @license Released under the GPL license.
@@ -231,11 +231,12 @@
 
 			cols = Math.floor((container_width - ((cols - 1) * _.options.gutter)) / item_width);
 			cols = cols <= 0 ? 1 : cols;
-
 			if (_.options.hideErrors) $items = $items.not('.'+_.options.classes.error);
 
 			$items.each(function(i){
-				var $item = $(this), heights = __.getHeights($item);
+				var $item = $(this);
+				$item.css('height', '');
+				var heights = { height: $item.height(), outer: $item.outerHeight() };
 				if (i % cols == 0){
 					if (row_items.length > 0){
 						v_gutter = __.update(row_items, tallest.height, item_width, container_width, cols, v_gutter, top, paddingLeft);
@@ -281,41 +282,18 @@
 				remainder = container_width - (row_items.length * item_width);
 
 			if (row_items.length == 1){ // 1 column
-				__.setHeights(row_items[0], tallest);
+				row_items[0].height(tallest);
 				left += remainder / 2;
 				row_items[0].css({ top: top, left: left });
 			} else {
 				v_gutter = short ? v_gutter : Math.floor(remainder / (row_items.length - 1));
 				left += short ? Math.floor((remainder - ((row_items.length - 1) * v_gutter)) / 2) : 0;
 				for (var i = 0; i < row_items.length; i++){
-					__.setHeights(row_items[i], tallest);
+					row_items[i].height(tallest);
 					row_items[i].css({ top: top, left: left + (item_width * i) + (v_gutter * i)});
 				}
 			}
 			return v_gutter;
-		};
-
-		/**
-		 * Sets the height of an item storing the original height and outer height in a data variable.
-		 * @param {*} $item - The jQuery item object.
-		 * @param {number} height - The height to set the item to.
-		 */
-		__.setHeights = function($item, height){
-			if ($item.data('brickfolio_height') == undefined)
-				$item.data('brickfolio_height', { height: $item.height(), outer: $item.outerHeight() });
-
-			$item.height(height);
-		};
-
-		/**
-		 * Gets the original height and outer height of the item.
-		 * @param {*} $item - The jQuery item object.
-		 * @returns {{height: *, outer: *}}
-		 */
-		__.getHeights = function($item){
-			return $item.data('brickfolio_height') == undefined
-				? { height: $item.height(), outer: $item.outerHeight() }
-				: $item.data('brickfolio_height');
 		};
 
 		return __.init();

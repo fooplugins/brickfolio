@@ -2,7 +2,7 @@
   "name": "brickfolio",
   "title": "Brickfolio",
   "description": "jQuery plugin for equalized grid layouts",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "http://fooplugins.com/plugins/brickfolio",
   "author": {
     "name": "FooPlugins",
@@ -37,10 +37,10 @@
     "jquery": ">=1.8"
   },
   "devDependencies": {
-    "grunt-contrib-uglify": "~0.1.1",
-    "grunt-contrib-clean": "~0.4.0",
     "grunt": "~0.4.1",
-    "grunt-contrib-cssmin": "~0.6.1"
+    "grunt-contrib-clean": "^0.4.1",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-uglify": "^0.11.0"
   },
   "keywords": [
     "layout",

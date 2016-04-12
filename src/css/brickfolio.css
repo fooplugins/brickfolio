@@ -1,6 +1,6 @@
 /*!
  * Brickfolio - A jQuery plugin for equally spaced grid layouts
- * @version 0.0.4
+ * @version 0.0.5
  * @link https://github.com/fooplugins/brickfolio
  * @copyright Steven Usher & Brad Vincent 2014
  * @license Released under the GPL license.
@@ -35,6 +35,7 @@
 	box-shadow:         0 3px 8px rgba(50, 50, 50, 0.50);
 	/* The brickfolio item must have a width set. */
 	width: 250px;
+	max-width: 100%;
 }
 .bf-item.bf-loaded {
 	display: inline-block;
@@ -48,13 +49,14 @@
 .bf-item > img {
 	display: block;
 	margin: 0;
+	max-width: 100%;
+	height: auto;
 }
 
 .bf-item > h4 {
 	margin: 0;
-	padding: 10px 0;
+	padding: 10px;
 	border-bottom: solid 3px #333333;
-	text-indent: 10px;
 }
 
 .bf-item > p {
